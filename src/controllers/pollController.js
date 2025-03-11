@@ -42,12 +42,19 @@ const createPoll = async (req, res) => {
 
 const getPolls = async (req, res) => {
   try {
-    const polls = await Poll.find().sort({ createdAt: -1 });
+    const currentDate = new Date();
+    const polls = await Poll.find({
+      isPrivate: false,
+      expiresAt: { $gt: currentDate },
+    }).sort({
+      createdAt: -1,
+    });
     res.status(200).send({
       success: true,
       data: polls,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -137,4 +144,11 @@ const createComment = async (req, res) => {
   }
 };
 
-module.exports = { createPoll, getPolls, getSinglePoll, addVote, addReaction, createComment };
+module.exports = {
+  createPoll,
+  getPolls,
+  getSinglePoll,
+  addVote,
+  addReaction,
+  createComment,
+};
